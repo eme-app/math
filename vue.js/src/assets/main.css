@@ -1,0 +1,12 @@
+
+#app {
+  margin: 0 auto;
+  padding: 2rem;
+  width: 100%;
+}
+
+
+body {
+  display: flex;
+
+}
