@@ -3,12 +3,12 @@
 
     let tasks = []
     let task: any
+    let config: any
 
     pb.collection("eme_user_config").getOne($user.userconfig).then((data) => {
-        console.log(data)
+        config = data
     })
 
-    
     //let fact_one_default_max = 
     //let fact_one_default_min = 
 
