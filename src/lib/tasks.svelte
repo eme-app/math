@@ -2,6 +2,7 @@
     import { onMount } from 'svelte';
     import { user, pb } from "./pocketbase";
     import { get, writable } from 'svelte/store';
+    import { end_hydrating } from 'svelte/internal';
 
     export let settings: Array<any> = [false]
     
@@ -15,6 +16,7 @@
     let note: string = ""
     let tries: number = 0
     let data: any
+    let wrong_answers: Array<any> = []
 
     function getRandomInt(min: number, max: number) {
         return Math.floor(Math.random() * (max - min + 1) ) + min;
@@ -35,19 +37,20 @@
                 settings[3] = userconfig.fact_one_default_max
                 settings[4] = userconfig.fact_two_default_min
                 settings[5] = userconfig.fact_two_default_max
+                console.log("no custom values");
             }
             console.log(settings);
             
             if (userconfig.mistake_handling_config === undefined) {
                 console.log("ERROR: no mistake_handling_config found in userconfig");                
             }
-        })
-        
+            createGame()
+        })  
     })
 
     function createTask() {
-        one = getRandomInt(userconfig.fact_one_default_min,userconfig.fact_one_default_max)
-        two = getRandomInt(userconfig.fact_two_default_min,userconfig.fact_two_default_max)
+        one = getRandomInt(settings[2],settings[3])
+        two = getRandomInt(settings[4],settings[5])
         return [one, two, one*two]
     }
 
@@ -62,17 +65,19 @@
             "factor2max": settings[5]
         };
         pb.collection('eme_games').create(data);
+        console.log("created game:");
+        console.log(data);
     }
 
     function advance() {
         clear.value = ""
-        page++
         current_task = createTask()
         note = ""
         console.log("advanced");        
         console.log("current_task="+current_task);
         tries = 0;
         inputed_result = clear.value
+        page++
     }
 
     function next() {
@@ -101,9 +106,17 @@
                 } else {
                     tries++
                 }
-
+                // TODO add wrong answer to database (create)
+                // TODO add wrong answer to wrong_answers array
+                // TODO more mistake handling
             }
         }
+    }
+
+    function end() {
+        console.log("end called");
+        // TODO write game end time to database (update)
+        // TODO make page reload
     }
 
     const onInput = (event) => {
@@ -115,17 +128,17 @@
     function exit() {
             if (page === 1) {
                 if (confirm("Nach "+page+" Aufgabe beenden?")) {
-                    alert("beendet")
+                    end()
                 }
             } else {
                 if (confirm("Nach "+page+" Aufgaben beenden?")) {
-                    alert("beendet")
+                    end()
                 }
             }
         }
     
 </script>
-<div id="form">
+<div id="form" class="form">
 {#if userconfig !== undefined}
     <!-- <form on:submit|preventDefault> -->
         <p class="task" id="task">{current_task[0]} x {current_task[1]} =</p>
