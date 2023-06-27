@@ -67,6 +67,7 @@
         pb.collection('eme_games').create(data);
         console.log("created game:");
         console.log(data);
+        //TODO write game start time to database (update)
     }
 
     function advance() {
