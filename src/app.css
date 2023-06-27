@@ -28,6 +28,21 @@
     box-sizing: border-box;
 }
 
+.input-two {
+    text-align: center;
+    width: 10%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.input:focus {
+    border: 1px solid #555;
+
+}
+
 .button {
     background-color: #4CAF50;
     color: white;
@@ -46,7 +61,7 @@
 #form {
   text-align: center;
   font-family: 'Times New Roman', Times, serif;
-  
+  height: 100%;
 }
 
 #please-login {
@@ -70,4 +85,45 @@
 
 .button-two:hover {
   opacity: 0.9;
+}
+
+p#wait {
+  text-align: center;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 250%;
+  font-weight: bold;
+}
+
+
+p#page {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+
+.default-p {
+  text-align: center;
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+}
+
+p#note {
+  color: red;
+}
+
+div#note {
+  white-space: pre-wrap;
+  height: 100px;
+}
+
+p#task {
+  text-align: center;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 200%;
+  font-weight: bold;
+}
+
+#errormessage {
+  color: red;
 }

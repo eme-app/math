@@ -2,52 +2,117 @@
     import { onMount } from 'svelte';
     import { user, pb } from "./pocketbase";
 
-    let tasks = []
     let current_task = []
+    let page: number = 1
+    let userconfig: any
     let one: number
     let two: number
-    let result: any
-    let page: number = 0
+    let clear: any
+    let inputed_result: any
+    let inputed_int: Number
+    let note: string = ""
+    let tries: number = 0
 
     function getRandomInt(min: number, max: number) {
         return Math.floor(Math.random() * (max - min + 1) ) + min;
     }
     
     onMount(async () => {
-        pb.collection("eme_user_config").getOne($user.userconfig).then((data) => {
-            result = data
-            for (let id = 0; id < 500; id++) {
-                one = getRandomInt(data.fact_one_default_min, data.fact_one_default_max)
-                two = getRandomInt(data.fact_two_default_min, data.fact_two_default_max)
-
-                current_task = [one, two, one*two, id]
-                tasks.push(current_task)
+        pb.collection("eme_user_config").getOne($user.userconfig, { expand: 'mistake_handling_config', '$autoCancel': false}).then((data) => {
+            userconfig = data
+            current_task = createTask()
+            console.log("userconfig:");
+            console.log(userconfig);
+            console.log("mistake_handling_config:");
+            console.log(userconfig.expand.mistake_handling_config);
+            console.log("user:");
+            console.log($user);            
+            if (userconfig.mistake_handling_config === undefined) {
+                console.log("ERROR: no mistake_handling_config found in userconfig");                
             }
         })
     })
 
-    function next() {
-        page++
+    function createTask() {
+        one = getRandomInt(userconfig.fact_one_default_min,userconfig.fact_one_default_max)
+        two = getRandomInt(userconfig.fact_two_default_min,userconfig.fact_two_default_max)
+        return [one, two, one*two]
     }
 
-    function previous() {
-        if (page > 0) {
-            page--
+    function advance() {
+        clear.value = ""
+        page++
+        current_task = createTask()
+        note = ""
+        console.log("advanced");        
+        console.log("current_task="+current_task);
+        tries = 0;
+        inputed_result = clear.value
+    }
+
+    function next() {
+        try {
+            inputed_int = parseInt(inputed_result)
+        } catch(error) {
+            alert("Fehler")
+            console.log(error);
+        }
+
+        if (inputed_int === current_task[2]) {
+            advance()
+        } else {
+            console.log("wrong:");
+            console.log("intput_as_int="+inputed_int);
+            console.log("intput="+inputed_result);
+            if (inputed_result === undefined || inputed_result === "" || Number.isNaN(inputed_int) || inputed_int === undefined) {
+                if (userconfig.expand.mistake_handling_config.allow_empty_results === false) {
+                    note = "Bitte Ergebnis eingeben"
+                } else {
+                    advance()
+                }
+            } else {
+                if (userconfig.expand.mistake_handling_config.retries <= tries) {
+                    advance()
+                } else {
+                    tries++
+                }
+
+            }
         }
     }
 
+    const onInput = (event) => {
+        if (event.key === 'Enter') {
+            next()
+        }
+	};
+
+    function exit() {
+        if (confirm("Nach "+page+" Aufgaben beenden?")) {
+            alert("beendet")
+        }
+    }
+    
 </script>
 <div id="form">
-{#if result !== undefined}
-    {#each tasks as task}
-        {#if page === task[3]}
-            <p class="task">{task[0]} x {task[1]} = {task[2]} (id: {task[3]})</p>
+{#if userconfig !== undefined}
+    <!-- <form on:submit|preventDefault> -->
+        <p class="task" id="task">{current_task[0]} x {current_task[1]} =</p>
+        <input type="text" placeholder="Ergebnis" id="result" class="input-two" bind:value={inputed_result} bind:this={clear} on:keydown={onInput}>
+        <br>
+        <p id="note" class="default-p">{note}</p>
+        <br><br><br>
+        {#if userconfig.showexitbuttonaftertasknum < page}
+            <button class="button-two" on:click={exit}>beenden</button>            
         {/if}
-    {/each}
-    <br><br><br>
-    <button class="button-two" on:click={previous}>	&lt</button>
-    <button class="button-two" on:click={next}>&gt</button>
+        <button class="button-two" on:click={next}>&gt</button>
+        {#if userconfig.show_current_task_number}
+            <div id="note"><p id="page">Aufgabe {page}</p></div>
+        {/if}
+    <!-- </form> -->
 {:else}
-    <p>Bitte warten...</p>
+<!--
+    <p id="wait">Bitte warten...</p>
+-->
 {/if}
 </div>
