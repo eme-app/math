@@ -2,16 +2,19 @@
     import { onMount } from 'svelte';
     import { user, pb } from "./pocketbase";
 
+    export let settings: Array<any> = [false]
+
     let current_task = []
     let page: number = 1
     let userconfig: any
-    let one: number
-    let two: number
-    let clear: any
-    let inputed_result: any
+    let one, two: number
+    let inputed_result, clear: any
     let inputed_int: Number
     let note: string = ""
     let tries: number = 0
+    let data: any
+    let f1min, f1max: number
+    let f2min, f2max: number
 
     function getRandomInt(min: number, max: number) {
         return Math.floor(Math.random() * (max - min + 1) ) + min;
@@ -26,7 +29,11 @@
             console.log("mistake_handling_config:");
             console.log(userconfig.expand.mistake_handling_config);
             console.log("user:");
-            console.log($user);            
+            console.log($user);
+            f1min = userconfig.fact_one_default_min
+            f1max = userconfig.fact_one_default_max
+            f2min = userconfig.fact_two_default_min
+            f2max = userconfig.fact_two_default_max
             if (userconfig.mistake_handling_config === undefined) {
                 console.log("ERROR: no mistake_handling_config found in userconfig");                
             }
@@ -37,6 +44,19 @@
         one = getRandomInt(userconfig.fact_one_default_min,userconfig.fact_one_default_max)
         two = getRandomInt(userconfig.fact_two_default_min,userconfig.fact_two_default_max)
         return [one, two, one*two]
+    }
+
+    function createGame() {
+        data = {
+            "player": [
+                $user.id
+            ],
+            "factor1min": f1min,
+            "factor1max": f1max,
+            "factor2min": f2min,
+            "factor2max": f2max
+        };
+        pb.collection('eme_games').create(data);
     }
 
     function advance() {
@@ -88,10 +108,16 @@
 	};
 
     function exit() {
-        if (confirm("Nach "+page+" Aufgaben beenden?")) {
-            alert("beendet")
+            if (page === 1) {
+                if (confirm("Nach "+page+" Aufgabe beenden?")) {
+                    alert("beendet")
+                }
+            } else {
+                if (confirm("Nach "+page+" Aufgaben beenden?")) {
+                    alert("beendet")
+                }
+            }
         }
-    }
     
 </script>
 <div id="form">
