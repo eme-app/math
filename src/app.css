@@ -13,12 +13,11 @@
     transition: all 0.3s ease-in-out;
 }
 
-#logout-test {
+#logout-logout {
     font-weight: bolder;
 }
 
 .input {
-    
     text-align: center;
     width: 20%;
     padding: 10px;
@@ -58,7 +57,7 @@
     opacity: 0.9;
 }
 
-#form {
+.form {
   text-align: center;
   font-family: 'Times New Roman', Times, serif;
   height: 100%;
@@ -126,4 +125,68 @@ p#task {
 
 #errormessage {
   color: red;
+}
+
+#go {
+  text-align: center;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 110%;
+  font-weight: bold;
+}
+
+input.switch[type=checkbox]{
+	height: 0;
+	width: 0;
+	visibility: hidden;
+}
+
+label.switch {
+	cursor: pointer;
+	text-indent: -9999px;
+	width: 100px;
+	height: 50px;
+	background: grey;
+	display: block;
+	border-radius: 50px;
+	position: relative;
+}
+
+label.switch:after {
+	content: '';
+	position: absolute;
+	top: 2.5px;
+	left: 2.5px;
+	width: 45px;
+	height: 45px;
+	background: #fff;
+	border-radius: 45px;
+	transition: 0.3s;
+}
+
+input.switch:checked + label {
+	background: #4CAF50;
+}
+
+input.switch:checked + label:after {
+	left: calc(100% - 2.5px);
+	transform: translateX(-100%);
+}
+
+label.switch:active:after {
+	width: 65px;
+}
+
+#sliders {
+  align-items: center;
+}
+#go-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+div#toggle-custom {
+  text-align: center;
+  font-family: 'Times New Roman', Times, serif;
 }

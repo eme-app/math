@@ -1,8 +1,10 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { user, pb } from "./pocketbase";
+    import { get, writable } from 'svelte/store';
 
     export let settings: Array<any> = [false]
+    
 
     let current_task = []
     let page: number = 1
@@ -13,8 +15,6 @@
     let note: string = ""
     let tries: number = 0
     let data: any
-    let f1min, f1max: number
-    let f2min, f2max: number
 
     function getRandomInt(min: number, max: number) {
         return Math.floor(Math.random() * (max - min + 1) ) + min;
@@ -30,14 +30,19 @@
             console.log(userconfig.expand.mistake_handling_config);
             console.log("user:");
             console.log($user);
-            f1min = userconfig.fact_one_default_min
-            f1max = userconfig.fact_one_default_max
-            f2min = userconfig.fact_two_default_min
-            f2max = userconfig.fact_two_default_max
+            if (settings[1] === false) {
+                settings[2] = userconfig.fact_one_default_min
+                settings[3] = userconfig.fact_one_default_max
+                settings[4] = userconfig.fact_two_default_min
+                settings[5] = userconfig.fact_two_default_max
+            }
+            console.log(settings);
+            
             if (userconfig.mistake_handling_config === undefined) {
                 console.log("ERROR: no mistake_handling_config found in userconfig");                
             }
         })
+        
     })
 
     function createTask() {
@@ -51,10 +56,10 @@
             "player": [
                 $user.id
             ],
-            "factor1min": f1min,
-            "factor1max": f1max,
-            "factor2min": f2min,
-            "factor2max": f2max
+            "factor1min": settings[2],
+            "factor1max": settings[3],
+            "factor2min": settings[4],
+            "factor2max": settings[5]
         };
         pb.collection('eme_games').create(data);
     }

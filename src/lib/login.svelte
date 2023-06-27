@@ -23,10 +23,10 @@
 </script>
 
 {#if $user}
-<button id="logout" on:click={logout}>angemeldet als {$user.username}<br><a id="logout-test">abmelden</a></button>
+<button id="logout" on:click={logout}>angemeldet als {$user.username}<br><a id="logout-logout">abmelden</a></button>
 {:else}
 <form on:submit|preventDefault>
-    <div id="form">
+    <div id="form" class="form">
         <input type="text" placeholder="Benutzername" bind:value={username} class="input" id="username"><br>
         <input type="password" placeholder="Passwort" bind:value={password} class="input" id="password"><br><br>
         <button id="login" class="button" on:click={login}>Anmelden</button>
