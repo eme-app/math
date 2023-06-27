@@ -5,11 +5,10 @@ import { user, pb } from "./lib/pocketbase";
 import Slider from "./lib/slider.svelte"
 </script>
 
-<Login/>
-
-{#if $user}
-    <Tasks/>
-    <Slider/>
+{#if !$user}
+<p id="please-login">Bitte anmelden</p>
 {:else}
-    <p>Bitte anmelden</p>
+<Tasks/>
 {/if}
+
+<Login/>
