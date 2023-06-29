@@ -3,6 +3,10 @@
     import { user, pb } from "./pocketbase";
     import { get, writable } from 'svelte/store';
     import { end_hydrating } from 'svelte/internal';
+    import App from '../App.svelte';
+    import Login from './login.svelte';
+    import Startpage from './startpage.svelte';
+    import Status from './status.svelte';
 
     export let settings: Array<any> = [false]
     
@@ -23,29 +27,33 @@
     }
     
     onMount(async () => {
-        pb.collection("eme_user_config").getOne($user.userconfig, { expand: 'mistake_handling_config', '$autoCancel': false}).then((data) => {
-            userconfig = data
-            current_task = createTask()
-            console.log("userconfig:");
-            console.log(userconfig);
-            console.log("mistake_handling_config:");
-            console.log(userconfig.expand.mistake_handling_config);
-            console.log("user:");
-            console.log($user);
-            if (settings[1] === false) {
-                settings[2] = userconfig.fact_one_default_min
-                settings[3] = userconfig.fact_one_default_max
-                settings[4] = userconfig.fact_two_default_min
-                settings[5] = userconfig.fact_two_default_max
-                console.log("no custom values");
+        try {
+            pb.collection("eme_user_config").getOne($user.userconfig, { expand: 'mistake_handling_config', '$autoCancel': false}).then((data) => {
+                userconfig = data
+                current_task = createTask()
+                console.log("userconfig:");
+                console.log(userconfig);
+                console.log("mistake_handling_config:");
+                console.log(userconfig.expand.mistake_handling_config);
+                console.log("user:");
+                console.log($user);
+                if (settings[1] === false) {
+                    settings[2] = userconfig.fact_one_default_min
+                    settings[3] = userconfig.fact_one_default_max
+                    settings[4] = userconfig.fact_two_default_min
+                    settings[5] = userconfig.fact_two_default_max
+
+                    console.log("no custom values");
+                }
+                console.log(settings);
+                
+                if (userconfig.mistake_handling_config === undefined) {
+                    console.error("ERROR: no mistake_handling_config found in userconfig");            
+                }
+                createGame()
+            })} catch(error) {
+                console.error(error);
             }
-            console.log(settings);
-            
-            if (userconfig.mistake_handling_config === undefined) {
-                console.log("ERROR: no mistake_handling_config found in userconfig");                
-            }
-            createGame()
-        })  
     })
 
     function createTask() {
@@ -67,7 +75,7 @@
         pb.collection('eme_games').create(data);
         console.log("created game:");
         console.log(data);
-        //TODO write game start time to database (update)
+        // TODO write game start time to database (update)
     }
 
     function advance() {
