@@ -1,7 +1,7 @@
 import PocketBase from 'pocketbase';
 import { get, writable } from 'svelte/store';
 
-export const pb = new PocketBase("https://pocketbase.emilemilchen.de/")
+export const pb = new PocketBase("https://pb.math.emilemilchen.de/")
 export const user = writable(pb.authStore.model)
 
 
